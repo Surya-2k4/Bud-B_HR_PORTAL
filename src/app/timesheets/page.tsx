@@ -54,6 +54,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useHRStore } from '@/store/hrStore';
 import { useAuth } from '@/context/auth-context';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const statusMap = {
   approved: { label: 'Approved', color: 'bg-emerald-500/10 text-emerald-500', icon: CheckCircle2 },
