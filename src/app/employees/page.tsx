@@ -80,7 +80,8 @@ export default function EmployeesPage() {
     dept: '',
     email: '',
     joinDate: '',
-    phone: ''
+    phone: '',
+    password: ''
   });
   const [editFormData, setEditFormData] = useState({
     employeeId: '',
@@ -117,9 +118,9 @@ export default function EmployeesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleAddEmployee = (e: React.FormEvent) => {
+  const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone) {
+    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone || !formData.password) {
       toast.error('Please fill all fields');
       return;
     }
@@ -130,23 +131,33 @@ export default function EmployeesPage() {
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast.error('Initial password must be at least 6 characters.');
+      return;
+    }
+
     const paddedId = `BUDB${employeeNumber.padStart(3, '0')}`;
 
-    addEmployee({
-      name: formData.name,
-      employeeId: paddedId,
-      role: formData.role,
-      dept: formData.dept,
-      email: formData.email,
-      joinDate: formData.joinDate,
-      phone: formData.phone,
-      status: 'active',
-      avatar: '',
-    });
+    try {
+      await addEmployee({
+        name: formData.name,
+        employeeId: paddedId,
+        role: formData.role,
+        dept: formData.dept,
+        email: formData.email,
+        joinDate: formData.joinDate,
+        phone: formData.phone,
+        status: 'active',
+        avatar: '',
+      }, formData.password);
 
-    setIsModalOpen(false);
-    setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '' });
-    toast.success('Employee added successfully!');
+      setIsModalOpen(false);
+      setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '', password: '' });
+      toast.success('Employee added successfully!');
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || 'Failed to add employee');
+    }
   };
 
   const handleDeactivate = (id: string) => {
@@ -214,6 +225,16 @@ export default function EmployeesPage() {
                         className="h-12 rounded-xl bg-accent/30 border-none"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Initial Password</Label>
+                      <Input 
+                        type="password"
+                        placeholder="Minimum 6 characters" 
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.password}
+                        onChange={(e) => setFormData({...formData, password: e.target.value})}
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

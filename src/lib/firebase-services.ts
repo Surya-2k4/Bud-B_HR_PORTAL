@@ -1,3 +1,4 @@
+import { initializeApp, deleteApp } from 'firebase/app';
 import { auth, db } from '@/lib/firebase';
 import {
   addDoc,
@@ -21,6 +22,8 @@ import {
   signOut,
   User,
   deleteUser,
+  getAuth,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth';
 
 export type UserRole = 'employee' | 'hr';
@@ -37,6 +40,7 @@ export interface UserProfile {
   phone: string;
   avatar: string;
   createdAt: string;
+  mustChangePassword?: boolean;
 }
 
 export interface TimesheetEntry {
@@ -181,6 +185,7 @@ function normalizeProfileDoc(id: string, data: any): UserProfile {
     phone: data.phone || defaultUserPhone,
     avatar: data.avatar || 'https://github.com/shadcn.png',
     createdAt,
+    mustChangePassword: data.mustChangePassword ?? false,
   };
 }
 
@@ -347,9 +352,67 @@ export async function getEmployees() {
     .filter((item) => item.role !== 'hr');
 }
 
-export async function addEmployee(employee: Omit<Employee, 'id'>) {
-  const reference = await addDoc(collection(db, 'employees'), employee);
-  return { id: reference.id, ...employee };
+export async function createEmployeeAuth(email: string, password: string) {
+  const tempAppName = `tempApp-${Date.now()}`;
+  const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+  };
+
+  const tempApp = initializeApp(firebaseConfig, tempAppName);
+  const tempAuth = getAuth(tempApp);
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+    await signOut(tempAuth);
+    return userCredential.user.uid;
+  } finally {
+    await deleteApp(tempApp);
+  }
+}
+
+export async function addEmployee(employee: Omit<Employee, 'id'>, password?: string) {
+  if (!password) {
+    throw new Error('Initial password is required to create a new employee account.');
+  }
+
+  const uid = await createEmployeeAuth(employee.email, password);
+
+  // 1. Create a user profile doc in Firestore 'users' collection
+  const userProfileRef = doc(db, 'users', uid);
+  await setDoc(userProfileRef, {
+    email: employee.email,
+    name: employee.name,
+    role: 'employee',
+    dept: employee.dept,
+    employeeId: employee.employeeId || '',
+    joinDate: employee.joinDate || new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
+    location: defaultUserLocation,
+    phone: employee.phone || defaultUserPhone,
+    avatar: employee.avatar || 'https://github.com/shadcn.png',
+    mustChangePassword: true,
+    createdAt: serverTimestamp(),
+  });
+
+  // 2. Create the employee record doc in Firestore 'employees' collection
+  const employeeRef = doc(db, 'employees', uid);
+  await setDoc(employeeRef, {
+    name: employee.name,
+    role: employee.role,
+    dept: employee.dept,
+    status: employee.status || 'active',
+    email: employee.email,
+    avatar: employee.avatar || 'https://github.com/shadcn.png',
+    employeeId: employee.employeeId || '',
+    joinDate: employee.joinDate || '',
+    phone: employee.phone || '',
+  });
+
+  return { id: uid, ...employee };
 }
 
 export async function deactivateEmployee(id: string) {

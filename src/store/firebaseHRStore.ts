@@ -52,7 +52,7 @@ interface HRState {
   requestLeave: (request: Omit<LeaveRequest, 'id' | 'status'>) => Promise<void>;
   approveLeave: (id: string) => Promise<void>;
   rejectLeave: (id: string) => Promise<void>;
-  addEmployee: (employee: Omit<Employee, 'id'>) => Promise<void>;
+  addEmployee: (employee: Omit<Employee, 'id'>, password?: string) => Promise<void>;
   updateEmployee: (id: string, updates: Partial<Employee>) => Promise<void>;
   deactivateEmployee: (id: string) => Promise<void>;
   createProject: (project: Omit<Project, 'id' | 'progress' | 'members' | 'status' | 'color'> & { members?: string[] }) => Promise<void>;
@@ -176,12 +176,13 @@ export const useHRStore = create<HRState>()((set, get) => ({
     }
   },
 
-  addEmployee: async (employee) => {
+  addEmployee: async (employee, password) => {
     try {
-      const result = await addEmployeeService(employee);
+      const result = await addEmployeeService(employee, password);
       set((state) => ({ employees: [result, ...state.employees] }));
     } catch (error) {
       console.error('Failed to add employee', error);
+      throw error;
     }
   },
 
