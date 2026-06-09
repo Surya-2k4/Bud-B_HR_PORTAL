@@ -20,6 +20,7 @@ import {
   signInWithPopup,
   signOut,
   User,
+  deleteUser,
 } from 'firebase/auth';
 
 export type UserRole = 'employee' | 'hr';
@@ -237,13 +238,21 @@ export async function signInWithGoogle() {
   const user = result.user;
 
   if (!user.email || !isBudbEmail(user.email)) {
-    await signOut(auth);
+    try {
+      await deleteUser(user);
+    } catch (err) {
+      console.error('Failed to delete unauthorized Google user from Firebase Auth', err);
+    }
     throw new Error('Only BUD-B Innovations email addresses are allowed.');
   }
 
   const profile = await getUserProfile(user.uid);
   if (!profile) {
-    await signOut(auth);
+    try {
+      await deleteUser(user);
+    } catch (err) {
+      console.error('Failed to delete unregistered Google user from Firebase Auth', err);
+    }
     throw new Error('This account is not registered. Please contact HR.');
   }
 
