@@ -417,12 +417,46 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
 
 export async function deactivateEmployee(id: string) {
   const employeeRef = doc(db, 'employees', id);
+  const userRef = doc(db, 'users', id);
   try {
     await updateDoc(employeeRef, { status: 'inactive' });
-    return;
-  } catch {
-    const userRef = doc(db, 'users', id);
+  } catch (error) {
+    console.error('Failed to deactivate in employees collection', error);
+  }
+  try {
     await updateDoc(userRef, { status: 'inactive' });
+  } catch (error) {
+    console.error('Failed to deactivate in users collection', error);
+  }
+}
+
+export async function activateEmployee(id: string) {
+  const employeeRef = doc(db, 'employees', id);
+  const userRef = doc(db, 'users', id);
+  try {
+    await updateDoc(employeeRef, { status: 'active' });
+  } catch (error) {
+    console.error('Failed to activate in employees collection', error);
+  }
+  try {
+    await updateDoc(userRef, { status: 'active' });
+  } catch (error) {
+    console.error('Failed to activate in users collection', error);
+  }
+}
+
+export async function deleteEmployee(id: string) {
+  const employeeRef = doc(db, 'employees', id);
+  const userRef = doc(db, 'users', id);
+  try {
+    await deleteDoc(employeeRef);
+  } catch (error) {
+    console.error('Failed to delete from employees collection', error);
+  }
+  try {
+    await deleteDoc(userRef);
+  } catch (error) {
+    console.error('Failed to delete from users collection', error);
   }
 }
 

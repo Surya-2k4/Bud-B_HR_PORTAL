@@ -8,6 +8,8 @@ import {
   createDepartment as createDepartmentService,
   createProject as createProjectService,
   deactivateEmployee as deactivateEmployeeService,
+  activateEmployee as activateEmployeeService,
+  deleteEmployee as deleteEmployeeService,
   deleteDepartment as deleteDepartmentService,
   getDepartments as getDepartmentsService,
   updateDepartment as updateDepartmentService,
@@ -55,6 +57,8 @@ interface HRState {
   addEmployee: (employee: Omit<Employee, 'id'>, password?: string) => Promise<void>;
   updateEmployee: (id: string, updates: Partial<Employee>) => Promise<void>;
   deactivateEmployee: (id: string) => Promise<void>;
+  activateEmployee: (id: string) => Promise<void>;
+  deleteEmployee: (id: string) => Promise<void>;
   createProject: (project: Omit<Project, 'id' | 'progress' | 'members' | 'status' | 'color'> & { members?: string[] }) => Promise<void>;
   updateProject: (id: string, updates: Partial<Project>) => Promise<void>;
   archiveProject: (id: string) => Promise<void>;
@@ -209,6 +213,30 @@ export const useHRStore = create<HRState>()((set, get) => ({
       }));
     } catch (error) {
       console.error('Failed to deactivate employee', error);
+    }
+  },
+
+  activateEmployee: async (id) => {
+    try {
+      await activateEmployeeService(id);
+      set((state) => ({
+        employees: state.employees.map((item) =>
+          item.id === id ? { ...item, status: 'active' } : item
+        ),
+      }));
+    } catch (error) {
+      console.error('Failed to activate employee', error);
+    }
+  },
+
+  deleteEmployee: async (id) => {
+    try {
+      await deleteEmployeeService(id);
+      set((state) => ({
+        employees: state.employees.filter((item) => item.id !== id),
+      }));
+    } catch (error) {
+      console.error('Failed to delete employee', error);
     }
   },
 

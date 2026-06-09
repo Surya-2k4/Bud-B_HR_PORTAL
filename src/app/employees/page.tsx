@@ -67,11 +67,14 @@ import { useRouter } from 'next/navigation';
 
 export default function EmployeesPage() {
   const [mounted, setMounted] = useState(false);
-  const { employees, departments, addEmployee, updateEmployee, deactivateEmployee } = useHRStore();
+  const { employees, departments, addEmployee, updateEmployee, deactivateEmployee, activateEmployee, deleteEmployee } = useHRStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<null | typeof employees[0]>(null);
+  const [confirmNameInput, setConfirmNameInput] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<null | typeof employees[0]>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -91,6 +94,25 @@ export default function EmployeesPage() {
     joinDate: '',
     phone: ''
   });
+
+  const handleDeleteEmployee = async () => {
+    if (!employeeToDelete) return;
+    const employeeName = employeeToDelete.name || employeeToDelete.email;
+    if (confirmNameInput.trim().toLowerCase() !== employeeName.trim().toLowerCase()) {
+      toast.error("Confirmation name does not match.");
+      return;
+    }
+    try {
+      await deleteEmployee(employeeToDelete.id);
+      setIsDeleteModalOpen(false);
+      setEmployeeToDelete(null);
+      setConfirmNameInput('');
+      toast.success("Employee deleted successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete employee.");
+    }
+  };
 
   const { role } = useAuth();
   const router = useRouter();
@@ -415,6 +437,48 @@ export default function EmployeesPage() {
                 </form>
               </DialogContent>
             </Dialog>
+            <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+              <DialogContent className="sm:max-w-[425px] rounded-[24px] glass dark:glass-dark border-border/50">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-destructive">Delete Employee</DialogTitle>
+                  <DialogDescription className="text-sm mt-2">
+                    This action will permanently delete the employee profile and user account for <strong className="text-foreground">{employeeToDelete?.name || employeeToDelete?.email}</strong>. This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <p className="text-xs text-muted-foreground">
+                    To confirm, please type the employee's name: <strong className="text-foreground select-none">{employeeToDelete?.name || employeeToDelete?.email}</strong>
+                  </p>
+                  <Input 
+                    placeholder="Type employee's name here"
+                    className="h-12 rounded-xl bg-accent/30 border-none"
+                    value={confirmNameInput}
+                    onChange={(e) => setConfirmNameInput(e.target.value)}
+                  />
+                </div>
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button 
+                    variant="secondary" 
+                    className="rounded-xl h-12" 
+                    onClick={() => {
+                      setIsDeleteModalOpen(false);
+                      setEmployeeToDelete(null);
+                      setConfirmNameInput('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="destructive"
+                    className="rounded-xl h-12"
+                    disabled={confirmNameInput.trim().toLowerCase() !== (employeeToDelete?.name || employeeToDelete?.email || '').trim().toLowerCase()}
+                    onClick={handleDeleteEmployee}
+                  >
+                    Confirm Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -530,11 +594,33 @@ export default function EmployeesPage() {
                             <Building2 size={16} /> Edit Details
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          {emp.status === 'inactive' ? (
+                            <DropdownMenuItem 
+                              className="cursor-pointer text-emerald-600 dark:text-emerald-400 focus:text-emerald-600 focus:bg-emerald-500/10"
+                              onClick={() => {
+                                activateEmployee(emp.id);
+                                toast.success("Employee status updated to Active");
+                              }}
+                            >
+                              Activate
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem 
+                              className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                              onClick={() => handleDeactivate(emp.id)}
+                            >
+                              Deactivate
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem 
-                            className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
-                            onClick={() => handleDeactivate(emp.id)}
+                            className="cursor-pointer text-destructive font-semibold focus:text-destructive focus:bg-destructive/10"
+                            onClick={() => {
+                              setEmployeeToDelete(emp);
+                              setConfirmNameInput('');
+                              setIsDeleteModalOpen(true);
+                            }}
                           >
-                            Deactivate
+                            Delete Employee
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
