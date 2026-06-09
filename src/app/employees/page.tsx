@@ -460,7 +460,7 @@ export default function EmployeesPage() {
             <TableBody>
               {filteredEmployees.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-48 text-center text-muted-foreground italic">No employees found matching your search</TableCell>
+                  <TableCell colSpan={7} className="h-48 text-center text-muted-foreground italic">No employees found matching your search</TableCell>
                 </TableRow>
               ) : filteredEmployees.map((emp) => {
                 const status = statusMap[emp.status as keyof typeof statusMap] || statusMap.active;
@@ -480,6 +480,9 @@ export default function EmployeesPage() {
                     </TableCell>
                     <TableCell className="py-5 text-center">
                       <span className="text-sm font-medium">{emp.employeeId || '—'}</span>
+                    </TableCell>
+                    <TableCell className="py-5 text-center">
+                      <span className="text-sm font-medium">{emp.dept || '—'}</span>
                     </TableCell>
                     <TableCell className="py-5 text-center">
                       <div className="flex justify-center">
