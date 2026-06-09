@@ -320,12 +320,12 @@ export default function LeavesPage() {
                     </Button>
                   )} />
                   <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-                    <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">All Statuses</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">All Statuses</DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-border/50" />
-                    <DropdownMenuItem onClick={() => setStatusFilter('approved')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Approved</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('accepted')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Accepted</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('pending')} className="rounded-xl p-3 cursor-pointer focus:bg-amber-500/10 text-amber-500 transition-colors font-medium">Pending</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('rejected')} className="rounded-xl p-3 cursor-pointer focus:bg-destructive/10 text-destructive transition-colors font-medium">Rejected</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('approved')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500 focus:text-white focus:**:text-white text-emerald-500 transition-colors font-medium">Approved</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('accepted')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500 focus:text-white focus:**:text-white text-emerald-500 transition-colors font-medium">Accepted</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('pending')} className="rounded-xl p-3 cursor-pointer focus:bg-amber-500 focus:text-white focus:**:text-white text-amber-500 transition-colors font-medium">Pending</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('rejected')} className="rounded-xl p-3 cursor-pointer focus:bg-destructive focus:text-white focus:**:text-white text-destructive transition-colors font-medium">Rejected</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

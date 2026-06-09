@@ -45,16 +45,20 @@ export default function HRApprovalsPage() {
     approveLeave, 
     rejectLeave, 
     approveTimesheet, 
-    rejectTimesheet 
+    rejectTimesheet,
+    projects
   } = useHRStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'leaves' | 'timesheets'>('leaves');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'accepted' | 'rejected'>('pending');
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setTypeFilter('all');
+  }, [activeTab]);
 
   if (!mounted) {
     return (
@@ -71,10 +75,7 @@ export default function HRApprovalsPage() {
     const matchesSearch = l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          l.type.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || l.type === typeFilter;
-    const matchesStatus =
-      statusFilter === 'all' ||
-      l.status === statusFilter ||
-      (statusFilter === 'accepted' && l.status === 'approved');
+    const matchesStatus = l.status === 'pending';
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -82,10 +83,7 @@ export default function HRApprovalsPage() {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          t.project.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || t.project === typeFilter;
-    const matchesStatus =
-      statusFilter === 'all' ||
-      t.status === statusFilter ||
-      (statusFilter === 'accepted' && t.status === 'approved');
+    const matchesStatus = t.status === 'pending';
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -141,31 +139,29 @@ export default function HRApprovalsPage() {
               <DropdownMenu>
                 <DropdownMenuTrigger render={(props) => (
                   <Button {...props} variant="outline" className="rounded-xl h-11 gap-2 border-border/50">
-                    <Filter size={18} /> {typeFilter === 'all' ? 'Filter' : `Type: ${typeFilter}`}
+                    <Filter size={18} /> {typeFilter === 'all' ? 'Filter' : `${activeTab === 'leaves' ? 'Type' : 'Project'}: ${typeFilter}`}
                   </Button>
                 )} />
                 <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-                  <DropdownMenuItem onClick={() => setTypeFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">All Types</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTypeFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">All {activeTab === 'leaves' ? 'Types' : 'Projects'}</DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-border/50" />
-                  <DropdownMenuItem onClick={() => setTypeFilter('Sick Leave')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">Sick Leave</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTypeFilter('Casual Leave')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">Casual Leave</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTypeFilter('Cloud Migration')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">Cloud Migration</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTypeFilter('HRMS Portal')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">HRMS Portal</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger render={(props) => (
-                  <Button {...props} variant="outline" className="rounded-xl h-11 gap-2 border-border/50">
-                    {statusFilter === 'all' ? 'All Requests' : `${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
-                  </Button>
-                )} />
-                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-                  <DropdownMenuItem onClick={() => setStatusFilter('pending')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">Pending</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter('approved')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Approved</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter('accepted')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Accepted</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter('rejected')} className="rounded-xl p-3 cursor-pointer focus:bg-destructive/10 text-destructive transition-colors font-medium">Rejected</DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/50" />
-                  <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">All Statuses</DropdownMenuItem>
+                  {activeTab === 'leaves' ? (
+                    <>
+                      <DropdownMenuItem onClick={() => setTypeFilter('Sick Leave')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">Sick Leave</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTypeFilter('Casual Leave')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">Casual Leave</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTypeFilter('Paid Leave')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">Paid Leave</DropdownMenuItem>
+                    </>
+                  ) : (
+                    projects.map((proj) => (
+                      <DropdownMenuItem 
+                        key={proj.id} 
+                        onClick={() => setTypeFilter(proj.name)} 
+                        className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium"
+                      >
+                        {proj.name}
+                      </DropdownMenuItem>
+                    ))
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

@@ -630,14 +630,14 @@ export default function HROrganizationPage() {
                               </Button>
                             } />
                             <DropdownMenuContent align="end" className="rounded-xl w-48">
-                              <DropdownMenuItem className="cursor-pointer" onClick={() => openEditProjectModal(project)}>Edit Details</DropdownMenuItem>
+                              <DropdownMenuItem className="cursor-pointer focus:bg-primary focus:text-white focus:**:text-white" onClick={() => openEditProjectModal(project)}>Edit Details</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
-                                className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
-                                onClick={() => {
-                                  archiveProject(project.id);
-                                  toast.success('Project archived.');
-                                }}
+                               className="cursor-pointer text-destructive focus:text-white focus:bg-destructive focus:**:text-white"
+                               onClick={() => {
+                                 archiveProject(project.id);
+                                 toast.success('Project archived.');
+                               }}
                               >
                                 Archive Project
                               </DropdownMenuItem>

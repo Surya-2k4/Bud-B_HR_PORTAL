@@ -14,7 +14,8 @@ import {
   Briefcase,
   CheckCircle2,
   TrendingUp,
-  ShieldCheck
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const hrMenuItems = [
   { icon: CheckCircle2, label: 'Approvals', href: '/hr/approvals' },
   { icon: Users, label: 'Organization', href: '/hr/organization' },
   { icon: Users, label: 'Employees', href: '/employees' },
+  { icon: FileText, label: 'Reports', href: '/hr/reports' },
   { icon: TrendingUp, label: 'Analytics', href: '/hr/analytics' },
 ];
 

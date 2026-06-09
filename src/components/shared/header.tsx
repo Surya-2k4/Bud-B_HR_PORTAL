@@ -86,7 +86,7 @@ export function Header() {
             
             <DropdownMenuItem 
               render={<Link href="/profile" />}
-              className="rounded-xl gap-3 p-3 cursor-pointer focus:bg-primary/10 transition-colors"
+              className="rounded-xl gap-3 p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors"
             >
               <User size={18} className="text-primary" /> 
               <span className="font-medium">Profile Settings</span>
@@ -94,7 +94,7 @@ export function Header() {
 
             <DropdownMenuSeparator className="bg-border/50" />
             <DropdownMenuItem 
-              className="rounded-xl gap-3 p-3 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 transition-colors"
+              className="rounded-xl gap-3 p-3 cursor-pointer text-destructive focus:text-white focus:bg-destructive focus:**:text-white transition-colors"
               onClick={logout}
             >
               <LogOut size={18} /> 

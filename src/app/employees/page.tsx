@@ -499,9 +499,9 @@ export default function EmployeesPage() {
               </Button>
             )} />
             <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-              <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">All Statuses</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">All Statuses</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/50" />
-              <DropdownMenuItem onClick={() => setStatusFilter('active')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Active Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('active')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500 focus:text-white focus:**:text-white text-emerald-500 transition-colors font-medium">Active Only</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setStatusFilter('on-leave')} className="rounded-xl p-3 cursor-pointer focus:bg-amber-500/10 text-amber-500 transition-colors font-medium">On Leave</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setStatusFilter('inactive')} className="rounded-xl p-3 cursor-pointer focus:bg-slate-500/10 text-slate-500 transition-colors font-medium">Inactive</DropdownMenuItem>
             </DropdownMenuContent>
@@ -573,11 +573,11 @@ export default function EmployeesPage() {
                             </Button>
                           } />
                         <DropdownMenuContent align="end" className="rounded-xl w-48">
-                                <DropdownMenuItem className="cursor-pointer gap-2">
+                          <DropdownMenuItem className="cursor-pointer gap-2 focus:bg-primary focus:text-white focus:**:text-white">
                             <Calendar size={16} /> View Schedule
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            className="cursor-pointer gap-2"
+                            className="cursor-pointer gap-2 focus:bg-primary focus:text-white focus:**:text-white"
                             onClick={() => {
                               setSelectedEmployee(emp);
                               setEditFormData({
@@ -596,7 +596,7 @@ export default function EmployeesPage() {
                           <DropdownMenuSeparator />
                           {emp.status === 'inactive' ? (
                             <DropdownMenuItem 
-                              className="cursor-pointer text-emerald-600 dark:text-emerald-400 focus:text-emerald-600 focus:bg-emerald-500/10"
+                              className="cursor-pointer text-emerald-600 dark:text-emerald-400 focus:text-white focus:bg-emerald-500 focus:**:text-white"
                               onClick={() => {
                                 activateEmployee(emp.id);
                                 toast.success("Employee status updated to Active");
@@ -606,14 +606,14 @@ export default function EmployeesPage() {
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem 
-                              className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                              className="cursor-pointer text-destructive focus:text-white focus:bg-destructive focus:**:text-white"
                               onClick={() => handleDeactivate(emp.id)}
                             >
                               Deactivate
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem 
-                            className="cursor-pointer text-destructive font-semibold focus:text-destructive focus:bg-destructive/10"
+                            className="cursor-pointer text-destructive font-semibold focus:text-white focus:bg-destructive focus:**:text-white"
                             onClick={() => {
                               setEmployeeToDelete(emp);
                               setConfirmNameInput('');

@@ -241,11 +241,11 @@ export default function ProjectsPage() {
               </Button>
             )} />
             <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-              <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary/10 transition-colors font-medium">All Statuses</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('all')} className="rounded-xl p-3 cursor-pointer focus:bg-primary focus:text-white focus:**:text-white transition-colors font-medium">All Statuses</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/50" />
-              <DropdownMenuItem onClick={() => setStatusFilter('active')} className="rounded-xl p-3 cursor-pointer focus:bg-blue-500/10 text-blue-500 transition-colors font-medium">Active Only</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter('completed')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500/10 text-emerald-500 transition-colors font-medium">Completed</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter('on-hold')} className="rounded-xl p-3 cursor-pointer focus:bg-amber-500/10 text-amber-500 transition-colors font-medium">On Hold</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('active')} className="rounded-xl p-3 cursor-pointer focus:bg-blue-500 focus:text-white focus:**:text-white text-blue-500 transition-colors font-medium">Active Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('completed')} className="rounded-xl p-3 cursor-pointer focus:bg-emerald-500 focus:text-white focus:**:text-white text-emerald-500 transition-colors font-medium">Completed</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('on-hold')} className="rounded-xl p-3 cursor-pointer focus:bg-amber-500 focus:text-white focus:**:text-white text-amber-500 transition-colors font-medium">On Hold</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -272,14 +272,14 @@ export default function ProjectsPage() {
                         </Button>
                       )} />
                       <DropdownMenuContent align="end" className="rounded-xl p-2 glass dark:glass-dark border-border/50 shadow-2xl">
-                        <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer">View Project</DropdownMenuItem>
+                        <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">View Project</DropdownMenuItem>
                         {role === 'hr' && (
                           <>
-                            <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer">Assign Employee</DropdownMenuItem>
-                            <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer">Edit Details</DropdownMenuItem>
+                            <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">Assign Employee</DropdownMenuItem>
+                            <DropdownMenuItem className="rounded-lg p-2 font-medium cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">Edit Details</DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-border/50" />
                             <DropdownMenuItem 
-                              className="rounded-lg p-2 font-medium text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
+                              className="rounded-lg p-2 font-medium text-destructive focus:text-white focus:bg-destructive focus:**:text-white cursor-pointer"
                               onClick={() => handleArchiveProject(project.id)}
                             >
                               Archive Project
@@ -390,14 +390,14 @@ export default function ProjectsPage() {
                             </Button>
                           } />
                           <DropdownMenuContent align="end" className="rounded-xl w-48">
-                            <DropdownMenuItem className="cursor-pointer">View Details</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">View Details</DropdownMenuItem>
                             {role === 'hr' && (
                               <>
-                                <DropdownMenuItem className="cursor-pointer">Assign Employees</DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer">Edit Scope</DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">Assign Employees</DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer focus:bg-primary focus:text-white focus:**:text-white">Edit Scope</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem 
-                                  className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                                  className="cursor-pointer text-destructive focus:text-white focus:bg-destructive focus:**:text-white"
                                   onClick={() => handleArchiveProject(project.id)}
                                 >
                                   Archive
