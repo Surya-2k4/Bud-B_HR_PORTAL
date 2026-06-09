@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search, User, Moon, Sun } from 'lucide-react';
+import { Search, User, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -62,15 +62,6 @@ export function Header() {
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </Button>
-
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="rounded-xl h-11 w-11 text-muted-foreground hover:text-foreground relative"
-        >
-          <Bell size={20} />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background" />
         </Button>
 
         <DropdownMenu>

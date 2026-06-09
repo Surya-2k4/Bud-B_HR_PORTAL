@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 export default function ProfilePage() {
   const { role, profile, updateProfile } = useAuth();
   const { employees } = useHRStore();
+  const assignedEmployee = employees.find((emp) => emp.email.toLowerCase() === profile?.email?.toLowerCase());
   const [isEditMode, setIsEditMode] = useState(false);
   const [formValues, setFormValues] = useState({
     dept: profile?.dept || '',
@@ -36,26 +37,31 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setFormValues({
-      dept: profile?.dept || '',
-      employeeId: profile?.employeeId || '',
-      joinDate: profile?.joinDate || '',
+      dept: profile?.dept || assignedEmployee?.dept || '',
+      employeeId: profile?.employeeId || assignedEmployee?.employeeId || '',
+      joinDate: profile?.joinDate || assignedEmployee?.joinDate || '',
       location: profile?.location || '',
-      phone: profile?.phone || '',
+      phone: profile?.phone || assignedEmployee?.phone || '',
     });
-  }, [profile]);
+  }, [profile, assignedEmployee]);
 
-  const assignedEmployee = employees.find((emp) => emp.email.toLowerCase() === profile?.email?.toLowerCase());
-  
   const userData = {
-    name: profile?.name || (role === 'hr' ? 'HR Administrator' : 'Team Member'),
-    role: role === 'hr' ? 'Head of HR' : 'Senior Product Designer',
-    email: profile?.email || (role === 'hr' ? 'admin@budbinnovations.com' : 'user@budbinnovations.com'),
+    name: profile?.name || assignedEmployee?.name || (role === 'hr' ? 'HR Administrator' : 'Team Member'),
+    role: role === 'hr' ? 'Head of HR' : (assignedEmployee?.role || 'Team Member'),
+    email: profile?.email || assignedEmployee?.email || (role === 'hr' ? 'admin@budbinnovations.com' : 'user@budbinnovations.com'),
     dept: assignedEmployee?.dept || formValues.dept || profile?.dept || (role === 'hr' ? 'Human Resources' : 'Product Design'),
-    joinDate: formValues.joinDate || profile?.joinDate || 'Jan 2024',
+    joinDate: formValues.joinDate || profile?.joinDate || assignedEmployee?.joinDate || 'Jan 2024',
     location: formValues.location || profile?.location || 'Bangalore, India',
-    phone: formValues.phone || profile?.phone || '+91 98765 43210',
+    phone: formValues.phone || profile?.phone || assignedEmployee?.phone || '+91 98765 43210',
     initials: profile?.name
       ? profile.name
+          .split(' ')
+          .map((part) => part[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase()
+      : assignedEmployee?.name
+      ? assignedEmployee.name
           .split(' ')
           .map((part) => part[0])
           .join('')

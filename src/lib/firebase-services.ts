@@ -325,6 +325,8 @@ export async function getEmployees() {
       email: data.email || '',
       avatar: data.avatar || 'https://github.com/shadcn.png',
       employeeId: data.employeeId || undefined,
+      joinDate: data.joinDate || undefined,
+      phone: data.phone || undefined,
     };
   });
 
