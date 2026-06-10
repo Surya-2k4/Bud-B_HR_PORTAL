@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setProfile(null);
         setRole(null);
+        useHRStore.getState().clearListeners();
         setIsLoading(false);
         return;
       }
@@ -103,6 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await signOutUser();
+    useHRStore.getState().clearListeners();
     setUser(null);
     setProfile(null);
     setRole(null);

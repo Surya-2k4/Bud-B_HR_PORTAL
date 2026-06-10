@@ -194,7 +194,7 @@ export default function LeavesPage() {
       end: formData.end,
       days: businessDays,
       reason: formData.reason,
-      avatar: profile?.avatar || 'https://github.com/shadcn.png',
+      avatar: profile?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentName)}`,
     });
 
     setIsModalOpen(false);

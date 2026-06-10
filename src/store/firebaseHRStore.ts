@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import {
   addEmployee as addEmployeeService,
   addTimesheet as addTimesheetService,
@@ -45,6 +47,7 @@ interface HRState {
   departments: Department[];
   notifications: Notification[];
   initializeData: () => Promise<void>;
+  clearListeners: () => void;
   getNotifications: () => Promise<void>;
   markNotificationRead: (id: string) => Promise<void>;
   addTimesheet: (entry: Omit<TimesheetEntry, 'id' | 'status'>) => Promise<void>;
@@ -67,6 +70,8 @@ interface HRState {
   deleteDepartment: (id: string) => Promise<void>;
 }
 
+let activeUnsubscribes: (() => void)[] = [];
+
 export const useHRStore = create<HRState>()((set, get) => ({
   initialized: false,
   timesheets: [],
@@ -83,21 +88,147 @@ export const useHRStore = create<HRState>()((set, get) => ({
     }
 
     try {
-      const [employees, projects, departments, timesheets, leaves, leaveBalances, notifications] = await Promise.all([
-        getEmployeesService(),
-        getProjectsService(),
-        getDepartmentsService(),
-        getTimesheetsService(),
-        getLeaveRequestsService(),
-        getLeaveBalancesService(),
-        getNotificationsService(),
-      ]);
+      // Clear any existing subscriptions first to be safe
+      activeUnsubscribes.forEach((unsub) => unsub());
+      activeUnsubscribes = [];
 
-      set({ employees, projects, departments, timesheets, leaves, leaveBalances, notifications, initialized: true });
+      const unsubEmployees = onSnapshot(
+        query(collection(db, 'employees'), orderBy('name', 'asc')),
+        (snapshot) => {
+          const employees = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data() as Omit<Employee, 'id'>;
+            return {
+              id: docSnap.id,
+              name: data.name || 'Unknown',
+              role: data.role || 'Employee',
+              dept: data.dept || 'Unassigned',
+              status: data.status || 'active',
+              email: data.email || '',
+              avatar: data.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.name || 'Unknown')}`,
+              employeeId: data.employeeId || undefined,
+              joinDate: data.joinDate || undefined,
+              phone: data.phone || undefined,
+            };
+          });
+          set({ employees });
+        },
+        (error) => console.error('Error listening to employees', error)
+      );
+      activeUnsubscribes.push(unsubEmployees);
+
+      const unsubProjects = onSnapshot(
+        query(collection(db, 'projects'), orderBy('name', 'asc')),
+        (snapshot) => {
+          const projects = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<Project, 'id'>),
+          }));
+          set({ projects });
+        },
+        (error) => console.error('Error listening to projects', error)
+      );
+      activeUnsubscribes.push(unsubProjects);
+
+      const unsubDepartments = onSnapshot(
+        query(collection(db, 'departments'), orderBy('name', 'asc')),
+        (snapshot) => {
+          const departments = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<Department, 'id'>),
+          }));
+          set({ departments });
+        },
+        (error) => console.error('Error listening to departments', error)
+      );
+      activeUnsubscribes.push(unsubDepartments);
+
+      const unsubTimesheets = onSnapshot(
+        query(collection(db, 'timesheets'), orderBy('date', 'desc')),
+        (snapshot) => {
+          const timesheets = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<TimesheetEntry, 'id'>),
+          }));
+          set({ timesheets });
+        },
+        (error) => console.error('Error listening to timesheets', error)
+      );
+      activeUnsubscribes.push(unsubTimesheets);
+
+      const unsubLeaves = onSnapshot(
+        query(collection(db, 'leaveRequests'), orderBy('createdAt', 'desc')),
+        (snapshot) => {
+          const leaves = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...(docSnap.data() as Omit<LeaveRequest, 'id'>),
+          }));
+          set({ leaves });
+        },
+        (error) => console.error('Error listening to leaveRequests', error)
+      );
+      activeUnsubscribes.push(unsubLeaves);
+
+      const unsubBalances = onSnapshot(
+        query(collection(db, 'leaveBalances'), orderBy('name', 'asc')),
+        (snapshot) => {
+          const balances: Record<string, LeaveBalance[]> = {};
+          snapshot.docs.forEach((docSnap) => {
+            const data = docSnap.data() as Omit<LeaveBalance, 'id'>;
+            if (!balances[data.name]) {
+              balances[data.name] = [];
+            }
+            balances[data.name].push({
+              id: docSnap.id,
+              ...data,
+            });
+          });
+          set({ leaveBalances: balances });
+        },
+        (error) => console.error('Error listening to leaveBalances', error)
+      );
+      activeUnsubscribes.push(unsubBalances);
+
+      const unsubNotifications = onSnapshot(
+        query(collection(db, 'notifications'), orderBy('createdAt', 'desc')),
+        (snapshot) => {
+          const notifications = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data() as Omit<Notification, 'id'>;
+            const createdAtValue = data.createdAt;
+            const createdAt = createdAtValue && typeof (createdAtValue as any).toDate === 'function'
+              ? (createdAtValue as any).toDate().toISOString()
+              : (createdAtValue as string) || new Date().toISOString();
+            return {
+              id: docSnap.id,
+              ...data,
+              createdAt,
+            };
+          });
+          set({ notifications });
+        },
+        (error) => console.error('Error listening to notifications', error)
+      );
+      activeUnsubscribes.push(unsubNotifications);
+
+      set({ initialized: true });
     } catch (error) {
-      console.error('Error initializing HR store', error);
+      console.error('Error initializing HR store with real-time listeners', error);
       set({ initialized: true });
     }
+  },
+
+  clearListeners: () => {
+    activeUnsubscribes.forEach((unsub) => unsub());
+    activeUnsubscribes = [];
+    set({
+      initialized: false,
+      timesheets: [],
+      leaves: [],
+      leaveBalances: {},
+      employees: [],
+      projects: [],
+      departments: [],
+      notifications: [],
+    });
   },
 
   addTimesheet: async (entry) => {

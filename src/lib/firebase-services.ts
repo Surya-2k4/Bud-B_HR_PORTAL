@@ -183,7 +183,7 @@ function normalizeProfileDoc(id: string, data: any): UserProfile {
     joinDate: data.joinDate || new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
     location: data.location || defaultUserLocation,
     phone: data.phone || defaultUserPhone,
-    avatar: data.avatar || 'https://github.com/shadcn.png',
+    avatar: data.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.name || normalizeUserName(data.email || ''))}`,
     createdAt,
     mustChangePassword: data.mustChangePassword ?? false,
   };
@@ -323,7 +323,7 @@ export async function getEmployees() {
       dept: data.dept || 'Unassigned',
       status: data.status || 'active',
       email: data.email || '',
-      avatar: data.avatar || 'https://github.com/shadcn.png',
+      avatar: data.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.name || 'Unknown')}`,
       employeeId: data.employeeId || undefined,
       joinDate: data.joinDate || undefined,
       phone: data.phone || undefined,
@@ -345,7 +345,7 @@ export async function getEmployees() {
         dept: data.dept || 'Unassigned',
         status: (data.status as 'active' | 'on-leave' | 'inactive') || 'active',
         email: data.email || '',
-        avatar: data.avatar || 'https://github.com/shadcn.png',
+        avatar: data.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.name || normalizeUserName(data.email || ''))}`,
         employeeId: data.employeeId || undefined,
         joinDate: data.joinDate || undefined,
         phone: data.phone || undefined,
@@ -383,6 +383,7 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
   }
 
   const uid = await createEmployeeAuth(employee.email, password);
+  const avatarUrl = employee.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(employee.name)}`;
 
   // 1. Create a user profile doc in Firestore 'users' collection
   const userProfileRef = doc(db, 'users', uid);
@@ -395,7 +396,7 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     joinDate: employee.joinDate || new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
     location: defaultUserLocation,
     phone: employee.phone || defaultUserPhone,
-    avatar: employee.avatar || 'https://github.com/shadcn.png',
+    avatar: avatarUrl,
     mustChangePassword: true,
     createdAt: serverTimestamp(),
   });
@@ -408,13 +409,13 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     dept: employee.dept,
     status: employee.status || 'active',
     email: employee.email,
-    avatar: employee.avatar || 'https://github.com/shadcn.png',
+    avatar: avatarUrl,
     employeeId: employee.employeeId || '',
     joinDate: employee.joinDate || '',
     phone: employee.phone || '',
   });
 
-  return { id: uid, ...employee };
+  return { id: uid, ...employee, avatar: avatarUrl };
 }
 
 export async function deactivateEmployee(id: string) {

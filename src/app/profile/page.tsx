@@ -15,7 +15,6 @@ import {
   Calendar, 
   MapPin, 
   Phone,
-  Camera,
   Edit3
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
@@ -53,6 +52,7 @@ export default function ProfilePage() {
     joinDate: formValues.joinDate || profile?.joinDate || assignedEmployee?.joinDate || 'Jan 2024',
     location: formValues.location || profile?.location || 'Bangalore, India',
     phone: formValues.phone || profile?.phone || assignedEmployee?.phone || '+91 98765 43210',
+    avatar: profile?.avatar || assignedEmployee?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile?.name || assignedEmployee?.name || (role === 'hr' ? 'HR Administrator' : 'Team Member'))}`,
     initials: profile?.name
       ? profile.name
           .split(' ')
@@ -102,15 +102,9 @@ export default function ProfilePage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
               <div className="relative inline-block mb-6">
                 <Avatar className="h-28 w-28 border-4 border-background shadow-xl">
-                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarImage src={userData.avatar} />
                   <AvatarFallback className="text-3xl font-bold">{userData.initials}</AvatarFallback>
                 </Avatar>
-                <button 
-                  suppressHydrationWarning
-                  className="absolute bottom-0 right-0 p-2 bg-primary text-white rounded-full shadow-lg hover:scale-110 transition-transform"
-                >
-                  <Camera size={16} />
-                </button>
               </div>
               <h2 className="text-xl font-bold">{userData.name}</h2>
               <p className="text-sm text-muted-foreground mt-1">{userData.role}</p>
@@ -125,30 +119,30 @@ export default function ProfilePage() {
               <CardTitle className="text-sm uppercase tracking-widest text-muted-foreground">Personal Details</CardTitle>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground">
+                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground shrink-0">
                     <Mail size={16} />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col min-w-0">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Email</span>
-                    <span className="text-sm font-medium">{userData.email}</span>
+                    <span className="text-sm font-medium truncate" title={userData.email}>{userData.email}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground">
+                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground shrink-0">
                     <Phone size={16} />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col min-w-0">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Phone</span>
-                    <span className="text-sm font-medium">{userData.phone}</span>
+                    <span className="text-sm font-medium truncate" title={userData.phone}>{userData.phone}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground">
+                  <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground shrink-0">
                     <MapPin size={16} />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col min-w-0">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Location</span>
-                    <span className="text-sm font-medium">{userData.location}</span>
+                    <span className="text-sm font-medium truncate" title={userData.location}>{userData.location}</span>
                   </div>
                 </div>
               </div>
@@ -221,44 +215,44 @@ export default function ProfilePage() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
+                      <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 shrink-0">
                         <Building2 size={20} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Department</span>
-                        <span className="text-base font-bold">{userData.dept}</span>
+                        <span className="text-base font-bold truncate" title={userData.dept}>{userData.dept}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500">
+                      <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500 shrink-0">
                         <Building2 size={20} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Employee ID</span>
-                        <span className="text-base font-bold">{formValues.employeeId || 'BUDB001'}</span>
+                        <span className="text-base font-bold truncate" title={formValues.employeeId || 'BUDB001'}>{formValues.employeeId || 'BUDB001'}</span>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500">
+                      <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 shrink-0">
                         <Calendar size={20} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Joining Date</span>
-                        <span className="text-base font-bold">{userData.joinDate}</span>
+                        <span className="text-base font-bold truncate" title={userData.joinDate}>{userData.joinDate}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500">
+                      <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
                         <User size={20} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Location</span>
-                        <span className="text-base font-bold">{userData.location}</span>
+                        <span className="text-base font-bold truncate" title={userData.location}>{userData.location}</span>
                       </div>
                     </div>
                   </div>
