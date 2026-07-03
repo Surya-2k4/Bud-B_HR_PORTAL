@@ -227,11 +227,27 @@ export async function signInUser(email: string, password: string) {
   }
 
   const result = await signInWithEmailAndPassword(auth, email, password);
-  const profile = await getUserProfile(result.user.uid);
+  let profile = await getUserProfile(result.user.uid);
 
   if (!profile) {
-    await signOut(auth);
-    throw new Error('This account is not registered. Please contact HR.');
+    if (HR_EMAILS.has(email.toLowerCase())) {
+      const name = normalizeUserName(email);
+      profile = await createUserProfile(result.user.uid, {
+        email: email.toLowerCase(),
+        name: name,
+        role: 'hr',
+        dept: 'Human Resources',
+        joinDate: new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
+        location: defaultUserLocation,
+        phone: defaultUserPhone,
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+        createdAt: new Date().toISOString(),
+        mustChangePassword: false,
+      });
+    } else {
+      await signOut(auth);
+      throw new Error('This account is not registered. Please contact HR.');
+    }
   }
 
   return result.user;
@@ -251,14 +267,30 @@ export async function signInWithGoogle() {
     throw new Error('Only BUD-B Innovations email addresses are allowed.');
   }
 
-  const profile = await getUserProfile(user.uid);
+  let profile = await getUserProfile(user.uid);
   if (!profile) {
-    try {
-      await deleteUser(user);
-    } catch (err) {
-      console.error('Failed to delete unregistered Google user from Firebase Auth', err);
+    if (user.email && HR_EMAILS.has(user.email.toLowerCase())) {
+      const name = user.displayName || normalizeUserName(user.email);
+      profile = await createUserProfile(user.uid, {
+        email: user.email.toLowerCase(),
+        name: name,
+        role: 'hr',
+        dept: 'Human Resources',
+        joinDate: new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
+        location: defaultUserLocation,
+        phone: defaultUserPhone,
+        avatar: user.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+        createdAt: new Date().toISOString(),
+        mustChangePassword: false,
+      });
+    } else {
+      try {
+        await deleteUser(user);
+      } catch (err) {
+        console.error('Failed to delete unregistered Google user from Firebase Auth', err);
+      }
+      throw new Error('This account is not registered. Please contact HR.');
     }
-    throw new Error('This account is not registered. Please contact HR.');
   }
 
   return user;
@@ -303,8 +335,26 @@ export async function updateUserProfile(uid: string, updates: Partial<UserProfil
 
 export async function getOrCreateUserProfile(user: User) {
   const uid = user.uid;
-  const existing = await getUserProfile(uid);
+  let existing = await getUserProfile(uid);
   if (existing) {
+    await ensureLeaveBalancesForUser(uid, existing.name);
+    return existing;
+  }
+
+  if (user.email && HR_EMAILS.has(user.email.toLowerCase())) {
+    const name = user.displayName || normalizeUserName(user.email);
+    existing = await createUserProfile(uid, {
+      email: user.email.toLowerCase(),
+      name: name,
+      role: 'hr',
+      dept: 'Human Resources',
+      joinDate: new Date().toLocaleString('default', { month: 'short', year: 'numeric' }),
+      location: defaultUserLocation,
+      phone: defaultUserPhone,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+      createdAt: new Date().toISOString(),
+      mustChangePassword: false,
+    });
     await ensureLeaveBalancesForUser(uid, existing.name);
     return existing;
   }

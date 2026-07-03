@@ -41,10 +41,9 @@ export function Header() {
     <header className="h-20 glass dark:glass-dark border-b border-border/50 sticky top-0 z-30 px-8 flex items-center justify-between">
       <div className="flex items-center gap-6 flex-1">
         <div className="flex lg:hidden items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-md">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <div className="bg-white rounded-lg px-2.5 py-1.5 border border-slate-100 shadow-sm flex items-center justify-center">
+            <img src="/logo.png" alt="BUD-B Innovations Logo" className="h-6 w-auto object-contain" />
           </div>
-          <span className="font-bold text-lg tracking-tight">BUD-B</span>
         </div>
         <Badge variant="secondary" className={cn(
           "hidden sm:flex px-3 py-1 rounded-lg font-bold uppercase tracking-widest text-[10px] border-none",

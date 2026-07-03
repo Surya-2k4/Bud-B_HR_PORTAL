@@ -45,15 +45,11 @@ export function Sidebar() {
     <>
       <aside className="hidden lg:flex w-64 glass dark:glass-dark h-screen sticky top-0 flex-col border-r border-border/50 z-40">
       <div className="p-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            <Briefcase size={24} />
+        <Link href="/" className="block">
+          <div className="bg-white dark:bg-white/95 rounded-xl p-3 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center">
+            <img src="/logo.png" alt="BUD-B Innovations Logo" className="h-8 w-auto object-contain" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight">BUD-B</span>
-            <span className="text-xs text-muted-foreground font-medium uppercase tracking-widest">People</span>
-          </div>
-        </div>
+        </Link>
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-3">

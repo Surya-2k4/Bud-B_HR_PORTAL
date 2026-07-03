@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if the user is an HR
+    function isHR() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'hr';
+    }
+
+    // Users collection: All authenticated users can read profiles; users can edit their own profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isHR());
+    }
+
+    // Employees collection: All authenticated users can read; only HR can write
+    match /employees/{employeeId} {
+      allow read: if isAuthenticated();
+      allow write: if isHR();
+    }
+
+    // Projects collection: All authenticated users can read; only HR can write
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+      allow write: if isHR();
+    }
+
+    // Departments collection: All authenticated users can read; only HR can write
+    match /departments/{deptId} {
+      allow read: if isAuthenticated();
+      allow write: if isHR();
+    }
+
+    // Timesheets collection: All authenticated users can read and write their logs
+    match /timesheets/{timesheetId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Leave Requests collection: All authenticated users can read and write request documents
+    match /leaveRequests/{leaveId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Leave Balances collection: All authenticated users can read and write balances
+    match /leaveBalances/{balanceId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Notifications collection: All authenticated users can read and write notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}

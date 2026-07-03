@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, Mail, Lock, ArrowRight, ChevronLeft, UserPlus, ShieldCheck } from 'lucide-react';
+import { Briefcase, Mail, Lock, ArrowRight, ChevronLeft, UserPlus, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [state, setState] = useState<AuthState>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin, loginWithGoogle: authLoginWithGoogle, resetPassword: authResetPassword } = useAuth();
 
@@ -82,49 +83,62 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
       {/* Left Side: Branding & Info */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#080B11] relative overflow-hidden items-center justify-center p-12 border-r border-white/5">
         {/* Animated Background Elements */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, 5, 0]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-0 left-0 w-full h-full opacity-20"
-        >
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-white rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-cyan-400 rounded-full blur-[120px]" />
-        </motion.div>
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0],
+              y: [0, -30, 0],
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-blue-600/10 rounded-full blur-[140px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.1, 1],
+              x: [0, -30, 0],
+              y: [0, 40, 0],
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-purple-600/10 rounded-full blur-[140px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.3, 1],
+              x: [30, 0, 30],
+              y: [-20, 20, -20],
+            }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-cyan-500/10 rounded-full blur-[120px]" 
+          />
+        </div>
 
-        <div className="relative z-10 text-white max-w-lg">
+        <div className="relative z-10 text-white max-w-lg w-full flex flex-col gap-6">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col gap-6"
           >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/30 shadow-2xl">
-                <Briefcase size={32} className="text-white" />
-              </div>
-              <h1 className="text-4xl font-black tracking-tight uppercase italic">BUD-B</h1>
+            {/* Logo container with white background to make the black text of the logo pop */}
+            <div className="bg-white/95 rounded-2xl p-4 shadow-xl flex items-center justify-center border border-white max-w-[280px] self-center lg:self-start">
+              <img src="/logo.png" alt="BUD-B Innovations Logo" className="h-10 w-auto object-contain" />
             </div>
-            <h2 className="text-6xl font-black leading-[1.1] mb-8 tracking-tighter">
-              DESIGNED FOR THE <br />
-              <span className="text-cyan-300 italic">NEXT GEN</span>
-            </h2>
-            <p className="text-xl text-primary-foreground/70 mb-12 leading-relaxed">
-              Experience the future of workspace management. Seamless, intuitive, and built for rapid innovation.
-            </p>
 
-            <div className="flex gap-12">
-              <div className="flex flex-col gap-1">
-                <span className="text-3xl font-bold">12.4k+</span>
-                <span className="text-xs uppercase tracking-widest text-primary-foreground/50 font-bold">Users Active</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-3xl font-bold">99.9%</span>
-                <span className="text-xs uppercase tracking-widest text-primary-foreground/50 font-bold">Uptime Rate</span>
-              </div>
+            {/* Main Branding Banner Image Container */}
+            <div className="glass dark:glass-dark rounded-[32px] p-2.5 border border-white/10 dark:border-white/5 shadow-2xl bg-white/5 backdrop-blur-xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 opacity-50 pointer-events-none" />
+              
+              {/* Floating glow behind the banner image */}
+              <div className="absolute -inset-1 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-[32px] blur-xl opacity-20 group-hover:opacity-30 transition duration-1000" />
+              
+              <img 
+                src="/signin_illustration.png" 
+                alt="BUD-B Innovations Workspace Illustration" 
+                className="rounded-[22px] w-full h-auto object-cover border border-white/5 shadow-lg relative z-10 hover:scale-[1.01] transition-transform duration-500"
+              />
             </div>
           </motion.div>
         </div>
@@ -153,6 +167,11 @@ export default function LoginPage() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-colors" />
                   
                   <CardHeader className="space-y-2 px-0 pb-10 text-center lg:text-left relative z-10">
+                    <div className="flex justify-center lg:justify-start mb-6">
+                      <div className="bg-white rounded-xl p-3 border border-slate-100 shadow-md">
+                        <img src="/logo.png" alt="BUD-B Innovations Logo" className="h-10 w-auto object-contain" />
+                      </div>
+                    </div>
                     <CardTitle className="text-4xl font-black tracking-tight">Welcome Back</CardTitle>
                     <CardDescription className="text-lg">
                       Sign in to your BUD-B Innovations portal
@@ -171,6 +190,7 @@ export default function LoginPage() {
                             className="pl-12 h-14 rounded-2xl bg-accent/30 border-2 border-transparent focus-visible:border-primary/50 transition-all text-base"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="off"
                             required
                           />
                         </div>
@@ -191,13 +211,21 @@ export default function LoginPage() {
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
                           <Input 
                             id="password" 
-                            type="password" 
+                            type={showPassword ? "text" : "password"} 
                             placeholder="••••••••"
-                            className="pl-12 h-14 rounded-2xl bg-accent/30 border-2 border-transparent focus-visible:border-primary/50 transition-all text-base"
+                            className="pl-12 pr-12 h-14 rounded-2xl bg-accent/30 border-2 border-transparent focus-visible:border-primary/50 transition-all text-base"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
                             required
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+                          >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                          </button>
                         </div>
                       </div>
                       <Button 
