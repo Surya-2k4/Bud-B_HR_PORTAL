@@ -145,26 +145,30 @@ export const useHRStore = create<HRState>()((set, get) => ({
       const unsubTimesheets = onSnapshot(
         query(collection(db, 'timesheets'), orderBy('date', 'desc')),
         (snapshot) => {
+          console.log('[DEBUG] timesheets onSnapshot fired. Docs count:', snapshot.size);
           const timesheets = snapshot.docs.map((docSnap) => ({
             id: docSnap.id,
             ...(docSnap.data() as Omit<TimesheetEntry, 'id'>),
           }));
+          console.log('[DEBUG] Setting timesheets in store:', timesheets.length);
           set({ timesheets });
         },
-        (error) => console.error('Error listening to timesheets', error)
+        (error) => console.error('[DEBUG] Error listening to timesheets', error)
       );
       activeUnsubscribes.push(unsubTimesheets);
 
       const unsubLeaves = onSnapshot(
         query(collection(db, 'leaveRequests'), orderBy('createdAt', 'desc')),
         (snapshot) => {
+          console.log('[DEBUG] leaveRequests onSnapshot fired. Docs count:', snapshot.size);
           const leaves = snapshot.docs.map((docSnap) => ({
             id: docSnap.id,
             ...(docSnap.data() as Omit<LeaveRequest, 'id'>),
           }));
+          console.log('[DEBUG] Setting leaves in store:', leaves.length);
           set({ leaves });
         },
-        (error) => console.error('Error listening to leaveRequests', error)
+        (error) => console.error('[DEBUG] Error listening to leaveRequests', error)
       );
       activeUnsubscribes.push(unsubLeaves);
 
@@ -233,8 +237,13 @@ export const useHRStore = create<HRState>()((set, get) => ({
 
   addTimesheet: async (entry) => {
     try {
+      console.log('[DEBUG] addTimesheet action called with:', entry);
       const result = await addTimesheetService(entry);
-      set((state) => ({ timesheets: [result, ...state.timesheets] }));
+      console.log('[DEBUG] addTimesheetService returned:', result);
+      set((state) => {
+        console.log('[DEBUG] Manually setting timesheets state in addTimesheet');
+        return { timesheets: [result, ...state.timesheets] };
+      });
     } catch (error) {
       console.error('Failed to add timesheet', error);
     }
@@ -277,9 +286,14 @@ export const useHRStore = create<HRState>()((set, get) => ({
 
   requestLeave: async (request) => {
     try {
+      console.log('[DEBUG] requestLeave action called with:', request);
       const result = await requestLeaveService(request);
+      console.log('[DEBUG] requestLeaveService returned:', result);
       const leaveBalances = await getLeaveBalancesService();
-      set((state) => ({ leaves: [result, ...state.leaves], leaveBalances }));
+      set((state) => {
+        console.log('[DEBUG] Manually setting leaves state in requestLeave');
+        return { leaves: [result, ...state.leaves], leaveBalances };
+      });
     } catch (error) {
       console.error('Failed to request leave', error);
     }

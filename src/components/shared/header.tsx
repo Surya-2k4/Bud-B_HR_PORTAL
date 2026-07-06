@@ -1,7 +1,6 @@
 'use client';
 
-import { Search, User, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { 
@@ -31,7 +30,6 @@ function getInitials(name?: string, fallback?: string) {
 }
 
 export function Header() {
-  const { theme, setTheme } = useTheme();
   const { profile, role, logout } = useAuth();
   const displayName = profile?.name || (role === 'hr' ? 'HR Admin' : 'Employee');
   const displayEmail = profile?.email || (role === 'hr' ? 'admin@budbinnovations.com' : 'user@budbinnovations.com');
@@ -54,14 +52,6 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="rounded-xl h-11 w-11 text-muted-foreground hover:text-foreground"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger render={(props) => (

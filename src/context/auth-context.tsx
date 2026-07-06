@@ -200,6 +200,7 @@ function PasswordChangeScreen({ user, onComplete }: { user: User; onComplete: ()
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
+                  suppressHydrationWarning={true}
                 />
               </div>
             </div>
@@ -214,6 +215,7 @@ function PasswordChangeScreen({ user, onComplete }: { user: User; onComplete: ()
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
+                  suppressHydrationWarning={true}
                 />
               </div>
             </div>
@@ -221,6 +223,7 @@ function PasswordChangeScreen({ user, onComplete }: { user: User; onComplete: ()
               type="submit" 
               className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
               disabled={isSubmitting}
+              suppressHydrationWarning={true}
             >
               {isSubmitting ? 'Updating...' : 'Update Password'}
             </Button>

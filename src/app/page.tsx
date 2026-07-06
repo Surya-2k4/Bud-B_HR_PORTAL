@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, Mail, Lock, ArrowRight, ChevronLeft, UserPlus, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Briefcase, Mail, Lock, ArrowRight, ChevronLeft, UserPlus, ShieldCheck, Eye, EyeOff, Clock, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -83,7 +83,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
       {/* Left Side: Branding & Info */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#080B11] relative overflow-hidden items-center justify-center p-12 border-r border-white/5">
+      <div className="hidden lg:flex lg:w-1/2 bg-white dark:bg-[#080B11] relative overflow-hidden items-center justify-center p-12 border-r border-slate-100 dark:border-white/5">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div 
@@ -93,7 +93,7 @@ export default function LoginPage() {
               y: [0, -30, 0],
             }}
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-blue-600/10 rounded-full blur-[140px]" 
+            className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-[140px]" 
           />
           <motion.div 
             animate={{ 
@@ -102,7 +102,7 @@ export default function LoginPage() {
               y: [0, 40, 0],
             }}
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-purple-600/10 rounded-full blur-[140px]" 
+            className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-purple-600/5 dark:bg-purple-600/10 rounded-full blur-[140px]" 
           />
           <motion.div 
             animate={{ 
@@ -111,34 +111,65 @@ export default function LoginPage() {
               y: [-20, 20, -20],
             }}
             transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-cyan-500/10 rounded-full blur-[120px]" 
+            className="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-cyan-500/5 dark:bg-cyan-500/10 rounded-full blur-[120px]" 
           />
         </div>
 
-        <div className="relative z-10 text-white max-w-lg w-full flex flex-col gap-6">
+        <div className="relative z-10 text-slate-900 dark:text-white max-w-lg w-full flex flex-col gap-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-10"
           >
             {/* Logo container with white background to make the black text of the logo pop */}
-            <div className="bg-white/95 rounded-2xl p-4 shadow-xl flex items-center justify-center border border-white max-w-[280px] self-center lg:self-start">
+            <div className="bg-white rounded-2xl p-4 shadow-md flex items-center justify-center border border-slate-100 dark:border-white/10 max-w-[280px] self-center lg:self-start">
               <img src="/logo.png" alt="BUD-B Innovations Logo" className="h-10 w-auto object-contain" />
             </div>
 
-            {/* Main Branding Banner Image Container */}
-            <div className="glass dark:glass-dark rounded-[32px] p-2.5 border border-white/10 dark:border-white/5 shadow-2xl bg-white/5 backdrop-blur-xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 opacity-50 pointer-events-none" />
-              
-              {/* Floating glow behind the banner image */}
-              <div className="absolute -inset-1 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-[32px] blur-xl opacity-20 group-hover:opacity-30 transition duration-1000" />
-              
-              <img 
-                src="/signin_illustration.png" 
-                alt="BUD-B Innovations Workspace Illustration" 
-                className="rounded-[22px] w-full h-auto object-cover border border-white/5 shadow-lg relative z-10 hover:scale-[1.01] transition-transform duration-500"
-              />
+            {/* Redesigned Modern Text & Components (Cardless) */}
+            <div className="space-y-6">
+              <span className="text-xs font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full inline-block">
+                Next-Gen HRMS Portal
+              </span>
+              <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-none bg-gradient-to-r from-primary to-cyan-500 bg-clip-text text-transparent">
+                Elevate Your <br />Workplace.
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-md font-medium leading-relaxed">
+                A unified intelligence platform for timesheets, leave management, and organizational analytics at BUD-B Innovations.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex gap-4 items-start border-l-2 border-primary/20 pl-4 py-1 hover:border-primary transition-colors">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                  <Briefcase size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground">Advanced Organization Insights</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5 font-medium">Coordinate departments, assign members, and manage employee profiles seamlessly.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 items-start border-l-2 border-cyan-500/20 pl-4 py-1 hover:border-cyan-500 transition-colors">
+                <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-500">
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground">Flexible Activity Log</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5 font-medium">Verify working hours with automated weekday limits and simple submission workflows.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 items-start border-l-2 border-primary/20 pl-4 py-1 hover:border-primary transition-colors">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                  <TrendingUp size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground">Real-Time Approvals</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5 font-medium">Streamlined requests for leaves and timesheets with instant updates and live balances.</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -192,6 +223,7 @@ export default function LoginPage() {
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="off"
                             required
+                            suppressHydrationWarning={true}
                           />
                         </div>
                       </div>
@@ -218,11 +250,13 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             autoComplete="new-password"
                             required
+                            suppressHydrationWarning={true}
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+                            suppressHydrationWarning={true}
                           >
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                           </button>
@@ -232,6 +266,7 @@ export default function LoginPage() {
                         type="submit" 
                         className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                         disabled={isLoading}
+                        suppressHydrationWarning={true}
                       >
                         {isLoading ? 'Processing...' : 'Sign In'}
                       </Button>
@@ -297,6 +332,7 @@ export default function LoginPage() {
                             placeholder="name@budbinnovations.com" 
                             className="pl-12 h-14 rounded-2xl bg-accent/30 border-2 border-transparent focus-visible:border-primary/50 transition-all"
                             required
+                            suppressHydrationWarning={true}
                           />
                         </div>
                       </div>
@@ -304,6 +340,7 @@ export default function LoginPage() {
                         type="submit" 
                         className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20"
                         disabled={isLoading}
+                        suppressHydrationWarning={true}
                       >
                         {isLoading ? 'Sending...' : 'Send Recovery Link'}
                       </Button>
@@ -341,25 +378,26 @@ export default function LoginPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label className="font-bold text-xs uppercase tracking-widest ml-1">First Name</Label>
-                          <Input className="h-14 rounded-2xl bg-accent/30 border-none" required />
+                          <Input className="h-14 rounded-2xl bg-accent/30 border-none" required suppressHydrationWarning={true} />
                         </div>
                         <div className="space-y-2">
                           <Label className="font-bold text-xs uppercase tracking-widest ml-1">Last Name</Label>
-                          <Input className="h-14 rounded-2xl bg-accent/30 border-none" required />
+                          <Input className="h-14 rounded-2xl bg-accent/30 border-none" required suppressHydrationWarning={true} />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label className="font-bold text-xs uppercase tracking-widest ml-1">Work Email</Label>
-                        <Input type="email" placeholder="name@budbinnovations.com" className="h-14 rounded-2xl bg-accent/30 border-none" required />
+                        <Input type="email" placeholder="name@budbinnovations.com" className="h-14 rounded-2xl bg-accent/30 border-none" required suppressHydrationWarning={true} />
                       </div>
                       <div className="space-y-2">
                         <Label className="font-bold text-xs uppercase tracking-widest ml-1">Department</Label>
-                        <Input placeholder="e.g. Engineering" className="h-14 rounded-2xl bg-accent/30 border-none" required />
+                        <Input placeholder="e.g. Engineering" className="h-14 rounded-2xl bg-accent/30 border-none" required suppressHydrationWarning={true} />
                       </div>
                       <Button 
                         type="submit" 
                         className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20"
                         disabled={isLoading}
+                        suppressHydrationWarning={true}
                       >
                         {isLoading ? 'Submitting...' : 'Submit Request'}
                       </Button>
