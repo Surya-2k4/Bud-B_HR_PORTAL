@@ -76,6 +76,19 @@ export default function EmployeesPage() {
   const [employeeToDelete, setEmployeeToDelete] = useState<null | typeof employees[0]>(null);
   const [confirmNameInput, setConfirmNameInput] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<null | typeof employees[0]>(null);
+  const formatAadhaar = (value: string) => {
+    const clean = value.replace(/\D/g, '');
+    const parts = [];
+    for (let i = 0; i < clean.length && i < 12; i += 4) {
+      parts.push(clean.substring(i, i + 4));
+    }
+    return parts.join(' ');
+  };
+
+  const formatPAN = (value: string) => {
+    return value.trim().toUpperCase().slice(0, 10);
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     employeeNumber: '',
@@ -84,7 +97,10 @@ export default function EmployeesPage() {
     email: '',
     joinDate: '',
     phone: '',
-    password: ''
+    password: '',
+    aadhar: '',
+    pan: '',
+    address: ''
   });
   const [editFormData, setEditFormData] = useState({
     employeeId: '',
@@ -92,7 +108,10 @@ export default function EmployeesPage() {
     dept: '',
     status: 'active',
     joinDate: '',
-    phone: ''
+    phone: '',
+    aadhar: '',
+    pan: '',
+    address: ''
   });
 
   const handleDeleteEmployee = async () => {
@@ -142,7 +161,7 @@ export default function EmployeesPage() {
 
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone || !formData.password) {
+    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone || !formData.password || !formData.aadhar || !formData.pan || !formData.address) {
       toast.error('Please fill all fields');
       return;
     }
@@ -155,6 +174,23 @@ export default function EmployeesPage() {
 
     if (formData.password.length < 6) {
       toast.error('Initial password must be at least 6 characters.');
+      return;
+    }
+
+    const cleanAadhar = formData.aadhar.replace(/[\s-]/g, '');
+    if (!/^\d{12}$/.test(cleanAadhar)) {
+      toast.error('Aadhaar number must be exactly 12 digits');
+      return;
+    }
+
+    const cleanPan = formData.pan.trim().toUpperCase();
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(cleanPan)) {
+      toast.error('PAN card must be a valid 10-character alphanumeric (e.g. ABCDE1234F)');
+      return;
+    }
+
+    if (!formData.address.trim()) {
+      toast.error('Address cannot be empty');
       return;
     }
 
@@ -171,10 +207,13 @@ export default function EmployeesPage() {
         phone: formData.phone,
         status: 'active',
         avatar: '',
+        aadhar: formatAadhaar(cleanAadhar),
+        pan: cleanPan,
+        address: formData.address.trim(),
       }, formData.password);
 
       setIsModalOpen(false);
-      setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '', password: '' });
+      setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '', password: '', aadhar: '', pan: '', address: '' });
       toast.success('Employee added successfully!');
     } catch (error: any) {
       console.error(error);
@@ -191,8 +230,25 @@ export default function EmployeesPage() {
     if (!selectedEmployee) {
       return;
     }
-    if (!editFormData.employeeId || !editFormData.role || !editFormData.dept || !editFormData.joinDate || !editFormData.phone) {
+    if (!editFormData.employeeId || !editFormData.role || !editFormData.dept || !editFormData.joinDate || !editFormData.phone || !editFormData.aadhar || !editFormData.pan || !editFormData.address) {
       toast.error('Please fill all fields');
+      return;
+    }
+
+    const cleanAadhar = editFormData.aadhar.replace(/[\s-]/g, '');
+    if (!/^\d{12}$/.test(cleanAadhar)) {
+      toast.error('Aadhaar number must be exactly 12 digits');
+      return;
+    }
+
+    const cleanPan = editFormData.pan.trim().toUpperCase();
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(cleanPan)) {
+      toast.error('PAN card must be a valid 10-character alphanumeric (e.g. ABCDE1234F)');
+      return;
+    }
+
+    if (!editFormData.address.trim()) {
+      toast.error('Address cannot be empty');
       return;
     }
 
@@ -203,6 +259,9 @@ export default function EmployeesPage() {
       status: editFormData.status as 'active' | 'on-leave' | 'inactive',
       joinDate: editFormData.joinDate,
       phone: editFormData.phone,
+      aadhar: formatAadhaar(cleanAadhar),
+      pan: cleanPan,
+      address: editFormData.address.trim(),
     });
 
     setIsEditModalOpen(false);
@@ -337,6 +396,35 @@ export default function EmployeesPage() {
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
+                        <Input
+                          placeholder="1234 5678 9012"
+                          className="h-12 rounded-xl bg-accent/30 border-none"
+                          value={formData.aadhar}
+                          onChange={(e) => setFormData({ ...formData, aadhar: formatAadhaar(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
+                        <Input
+                          placeholder="ABCDE1234F"
+                          className="h-12 rounded-xl bg-accent/30 border-none"
+                          value={formData.pan}
+                          onChange={(e) => setFormData({ ...formData, pan: formatPAN(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
+                      <Input
+                        placeholder="123 Main St, Bangalore, India"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      />
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button type="submit" className="w-full h-12 rounded-xl font-bold">Create Profile</Button>
@@ -387,6 +475,35 @@ export default function EmployeesPage() {
                         className="h-12 rounded-xl bg-accent/30 border-none"
                         value={editFormData.phone}
                         onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
+                        <Input
+                          placeholder="1234 5678 9012"
+                          className="h-12 rounded-xl bg-accent/30 border-none"
+                          value={editFormData.aadhar}
+                          onChange={(e) => setEditFormData({ ...editFormData, aadhar: formatAadhaar(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
+                        <Input
+                          placeholder="ABCDE1234F"
+                          className="h-12 rounded-xl bg-accent/30 border-none"
+                          value={editFormData.pan}
+                          onChange={(e) => setEditFormData({ ...editFormData, pan: formatPAN(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
+                      <Input
+                        placeholder="123 Main St, Bangalore, India"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={editFormData.address}
+                        onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
@@ -587,6 +704,9 @@ export default function EmployeesPage() {
                                 status: emp.status,
                                 joinDate: emp.joinDate || '',
                                 phone: emp.phone || '',
+                                aadhar: emp.aadhar || '',
+                                pan: emp.pan || '',
+                                address: emp.address || '',
                               });
                               setIsEditModalOpen(true);
                             }}

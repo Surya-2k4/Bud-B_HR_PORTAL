@@ -108,6 +108,9 @@ export const useHRStore = create<HRState>()((set, get) => ({
               employeeId: data.employeeId || undefined,
               joinDate: data.joinDate || undefined,
               phone: data.phone || undefined,
+              aadhar: data.aadhar || undefined,
+              pan: data.pan || undefined,
+              address: data.address || undefined,
             };
           });
           set({ employees });

@@ -41,6 +41,9 @@ export interface UserProfile {
   avatar: string;
   createdAt: string;
   mustChangePassword?: boolean;
+  aadhar?: string;
+  pan?: string;
+  address?: string;
 }
 
 export interface TimesheetEntry {
@@ -97,6 +100,9 @@ export interface Employee {
   employeeId?: string;
   joinDate?: string;
   phone?: string;
+  aadhar?: string;
+  pan?: string;
+  address?: string;
 }
 
 export interface Project {
@@ -186,6 +192,9 @@ function normalizeProfileDoc(id: string, data: any): UserProfile {
     avatar: data.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.name || normalizeUserName(data.email || ''))}`,
     createdAt,
     mustChangePassword: data.mustChangePassword ?? false,
+    aadhar: data.aadhar || undefined,
+    pan: data.pan || undefined,
+    address: data.address || undefined,
   };
 }
 
@@ -377,6 +386,9 @@ export async function getEmployees() {
       employeeId: data.employeeId || undefined,
       joinDate: data.joinDate || undefined,
       phone: data.phone || undefined,
+      aadhar: data.aadhar || undefined,
+      pan: data.pan || undefined,
+      address: data.address || undefined,
     };
   });
 
@@ -399,6 +411,9 @@ export async function getEmployees() {
         employeeId: data.employeeId || undefined,
         joinDate: data.joinDate || undefined,
         phone: data.phone || undefined,
+        aadhar: data.aadhar || undefined,
+        pan: data.pan || undefined,
+        address: data.address || undefined,
       };
     })
     .filter((item) => item.role !== 'hr');
@@ -449,6 +464,9 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     avatar: avatarUrl,
     mustChangePassword: true,
     createdAt: serverTimestamp(),
+    aadhar: employee.aadhar || '',
+    pan: employee.pan || '',
+    address: employee.address || '',
   });
 
   // 2. Create the employee record doc in Firestore 'employees' collection
@@ -463,6 +481,9 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     employeeId: employee.employeeId || '',
     joinDate: employee.joinDate || '',
     phone: employee.phone || '',
+    aadhar: employee.aadhar || '',
+    pan: employee.pan || '',
+    address: employee.address || '',
   });
 
   return { id: uid, ...employee, avatar: avatarUrl };
@@ -573,12 +594,16 @@ export async function deleteDepartment(id: string) {
 
 export async function updateEmployee(id: string, updates: Partial<Employee>) {
   const employeeRef = doc(db, 'employees', id);
+  const userRef = doc(db, 'users', id);
   try {
     await updateDoc(employeeRef, updates);
-    return;
-  } catch {
-    const userRef = doc(db, 'users', id);
+  } catch (error) {
+    console.error('Failed to update in employees collection', error);
+  }
+  try {
     await updateDoc(userRef, updates);
+  } catch (error) {
+    console.error('Failed to update in users collection', error);
   }
 }
 

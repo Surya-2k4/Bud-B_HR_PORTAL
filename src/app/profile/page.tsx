@@ -15,23 +15,60 @@ import {
   Calendar, 
   MapPin, 
   Phone,
-  Edit3
+  Edit3,
+  Eye,
+  EyeOff,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useHRStore } from '@/store/hrStore';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function ProfilePage() {
   const { role, profile, updateProfile } = useAuth();
   const { employees } = useHRStore();
   const assignedEmployee = employees.find((emp) => emp.email.toLowerCase() === profile?.email?.toLowerCase());
   const [isEditMode, setIsEditMode] = useState(false);
+  const formatAadhaar = (value: string) => {
+    const clean = value.replace(/\D/g, '');
+    const parts = [];
+    for (let i = 0; i < clean.length && i < 12; i += 4) {
+      parts.push(clean.substring(i, i + 4));
+    }
+    return parts.join(' ');
+  };
+
+  const formatPAN = (value: string) => {
+    return value.trim().toUpperCase().slice(0, 10);
+  };
+
+  const maskAadhaar = (val: string) => {
+    if (!val) return '—';
+    const clean = val.replace(/\s/g, '');
+    if (clean.length < 4) return val;
+    return `•••• •••• ${clean.slice(-4)}`;
+  };
+
+  const maskPAN = (val: string) => {
+    if (!val) return '—';
+    const clean = val.trim();
+    if (clean.length < 4) return val;
+    return `•••••${clean.slice(-5, -1)}•`;
+  };
+
+  const [showAadhar, setShowAadhar] = useState(false);
+  const [showPan, setShowPan] = useState(false);
+
   const [formValues, setFormValues] = useState({
     dept: profile?.dept || '',
     employeeId: profile?.employeeId || '',
     joinDate: profile?.joinDate || '',
     location: profile?.location || '',
     phone: profile?.phone || '',
+    aadhar: profile?.aadhar || '',
+    pan: profile?.pan || '',
+    address: profile?.address || '',
   });
 
   useEffect(() => {
@@ -41,6 +78,9 @@ export default function ProfilePage() {
       joinDate: profile?.joinDate || assignedEmployee?.joinDate || '',
       location: profile?.location || '',
       phone: profile?.phone || assignedEmployee?.phone || '',
+      aadhar: profile?.aadhar || assignedEmployee?.aadhar || '',
+      pan: profile?.pan || assignedEmployee?.pan || '',
+      address: profile?.address || assignedEmployee?.address || '',
     });
   }, [profile, assignedEmployee]);
 
@@ -74,6 +114,19 @@ export default function ProfilePage() {
 
   const handleSaveProfile = async () => {
     if (!profile) return;
+
+    const cleanAadhar = formValues.aadhar.replace(/[\s-]/g, '');
+    if (cleanAadhar && !/^\d{12}$/.test(cleanAadhar)) {
+      toast.error('Aadhaar number must be exactly 12 digits');
+      return;
+    }
+
+    const cleanPan = formValues.pan.trim().toUpperCase();
+    if (cleanPan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(cleanPan)) {
+      toast.error('PAN card must be a valid 10-character alphanumeric (e.g. ABCDE1234F)');
+      return;
+    }
+
     try {
       await updateProfile({
         dept: formValues.dept,
@@ -81,10 +134,15 @@ export default function ProfilePage() {
         joinDate: formValues.joinDate,
         location: formValues.location,
         phone: formValues.phone,
+        aadhar: cleanAadhar ? formatAadhaar(cleanAadhar) : '',
+        pan: cleanPan,
+        address: formValues.address.trim(),
       });
       setIsEditMode(false);
+      toast.success('Profile updated successfully!');
     } catch (error) {
       console.error('Failed to update profile', error);
+      toast.error('Failed to update profile');
     }
   };
 
@@ -205,6 +263,35 @@ export default function ProfilePage() {
                       onChange={(e) => setFormValues({ ...formValues, phone: e.target.value })}
                     />
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
+                      <Input
+                        placeholder="1234 5678 9012"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formValues.aadhar}
+                        onChange={(e) => setFormValues({ ...formValues, aadhar: formatAadhaar(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
+                      <Input
+                        placeholder="ABCDE1234F"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formValues.pan}
+                        onChange={(e) => setFormValues({ ...formValues, pan: formatPAN(e.target.value) })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
+                    <Input
+                      placeholder="123 Main St, Bangalore, India"
+                      className="h-12 rounded-xl bg-accent/30 border-none"
+                      value={formValues.address}
+                      onChange={(e) => setFormValues({ ...formValues, address: e.target.value })}
+                    />
+                  </div>
                   <div className="flex gap-3 justify-end pt-4">
                     <Button variant="secondary" className="rounded-xl h-12" onClick={() => setIsEditMode(false)}>
                       Cancel
@@ -235,6 +322,28 @@ export default function ProfilePage() {
                         <span className="text-base font-bold truncate" title={formValues.employeeId || 'BUDB001'}>{formValues.employeeId || 'BUDB001'}</span>
                       </div>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-500 shrink-0">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex flex-col min-w-0 w-full">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Aadhaar Number</span>
+                        <div className="flex items-center justify-between gap-2 pr-4">
+                          <span className="text-base font-bold truncate">
+                            {showAadhar ? (formValues.aadhar || '—') : maskAadhaar(formValues.aadhar)}
+                          </span>
+                          {formValues.aadhar && (
+                            <button
+                              type="button"
+                              onClick={() => setShowAadhar(!showAadhar)}
+                              className="text-muted-foreground hover:text-foreground focus:outline-none"
+                            >
+                              {showAadhar ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-6">
                     <div className="flex items-center gap-3">
@@ -253,6 +362,41 @@ export default function ProfilePage() {
                       <div className="flex flex-col min-w-0">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Location</span>
                         <span className="text-base font-bold truncate" title={userData.location}>{userData.location}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-rose-500/10 text-rose-500 shrink-0">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex flex-col min-w-0 w-full">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">PAN Card</span>
+                        <div className="flex items-center justify-between gap-2 pr-4">
+                          <span className="text-base font-bold truncate">
+                            {showPan ? (formValues.pan || '—') : maskPAN(formValues.pan)}
+                          </span>
+                          {formValues.pan && (
+                            <button
+                              type="button"
+                              onClick={() => setShowPan(!showPan)}
+                              className="text-muted-foreground hover:text-foreground focus:outline-none"
+                            >
+                              {showPan ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-1 sm:col-span-2 space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-slate-500/10 text-slate-500 shrink-0">
+                        <MapPin size={20} />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Address</span>
+                        <span className="text-base font-bold whitespace-pre-line leading-relaxed" title={formValues.address || '—'}>
+                          {formValues.address || '—'}
+                        </span>
                       </div>
                     </div>
                   </div>
