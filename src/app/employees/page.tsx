@@ -100,7 +100,8 @@ export default function EmployeesPage() {
     password: '',
     aadhar: '',
     pan: '',
-    address: ''
+    address: '',
+    dob: ''
   });
   const [editFormData, setEditFormData] = useState({
     employeeId: '',
@@ -111,7 +112,8 @@ export default function EmployeesPage() {
     phone: '',
     aadhar: '',
     pan: '',
-    address: ''
+    address: '',
+    dob: ''
   });
 
   const handleDeleteEmployee = async () => {
@@ -161,7 +163,7 @@ export default function EmployeesPage() {
 
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone || !formData.password || !formData.aadhar || !formData.pan || !formData.address) {
+    if (!formData.name || !formData.employeeNumber || !formData.role || !formData.dept || !formData.email || !formData.joinDate || !formData.phone || !formData.password || !formData.aadhar || !formData.pan || !formData.address || !formData.dob) {
       toast.error('Please fill all fields');
       return;
     }
@@ -210,10 +212,11 @@ export default function EmployeesPage() {
         aadhar: formatAadhaar(cleanAadhar),
         pan: cleanPan,
         address: formData.address.trim(),
+        dob: formData.dob,
       }, formData.password);
 
       setIsModalOpen(false);
-      setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '', password: '', aadhar: '', pan: '', address: '' });
+      setFormData({ name: '', employeeNumber: '', role: '', dept: '', email: '', joinDate: '', phone: '', password: '', aadhar: '', pan: '', address: '', dob: '' });
       toast.success('Employee added successfully!');
     } catch (error: any) {
       console.error(error);
@@ -230,7 +233,7 @@ export default function EmployeesPage() {
     if (!selectedEmployee) {
       return;
     }
-    if (!editFormData.employeeId || !editFormData.role || !editFormData.dept || !editFormData.joinDate || !editFormData.phone || !editFormData.aadhar || !editFormData.pan || !editFormData.address) {
+    if (!editFormData.employeeId || !editFormData.role || !editFormData.dept || !editFormData.joinDate || !editFormData.phone || !editFormData.aadhar || !editFormData.pan || !editFormData.address || !editFormData.dob) {
       toast.error('Please fill all fields');
       return;
     }
@@ -262,6 +265,7 @@ export default function EmployeesPage() {
       aadhar: formatAadhaar(cleanAadhar),
       pan: cleanPan,
       address: editFormData.address.trim(),
+      dob: editFormData.dob,
     });
 
     setIsEditModalOpen(false);
@@ -290,7 +294,7 @@ export default function EmployeesPage() {
                   <UserPlus size={18} /> Add Employee
                 </Button>
               } />
-              <DialogContent className="sm:max-w-[425px] rounded-[24px] glass dark:glass-dark border-border/50">
+              <DialogContent className="sm:max-w-[650px] rounded-[24px] glass dark:glass-dark border-border/50">
                 <form onSubmit={handleAddEmployee}>
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Add Team Member</DialogTitle>
@@ -298,7 +302,7 @@ export default function EmployeesPage() {
                       Create a new profile for an employee in the system.
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="grid gap-6 py-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
                     <div className="space-y-2">
                       <Label className="font-bold text-xs uppercase tracking-widest ml-1">Full Name</Label>
                       <Input 
@@ -318,105 +322,106 @@ export default function EmployeesPage() {
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                       />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Employee ID</Label>
-                        <div className="flex rounded-xl overflow-hidden border border-border/50 bg-accent/30">
-                          <span className="inline-flex items-center px-3 text-sm font-semibold text-muted-foreground bg-slate-950/5 border-r border-border/50">BUDB</span>
-                          <Input
-                            placeholder="001"
-                            className="h-12 rounded-none rounded-r-xl bg-transparent border-none focus:ring-0"
-                            value={formData.employeeNumber}
-                            onChange={(e) => setFormData({...formData, employeeNumber: e.target.value.replace(/[^0-9]/g, '')})}
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Work Email</Label>
-                        <Input 
-                          type="email"
-                          placeholder="john@budbinnovations.com" 
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.email}
-                          onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Role</Label>
-                        <Input 
-                          placeholder="e.g. Developer" 
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.role}
-                          onChange={(e) => setFormData({...formData, role: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Department</Label>
-                        <Select onValueChange={(v) => setFormData({...formData, dept: v as string})}>
-                          <SelectTrigger className="w-full h-12 rounded-xl bg-accent/30 border-none text-left">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {departments.length > 0 ? (
-                              departments.map((dept) => (
-                                <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                              ))
-                            ) : (
-                              <>
-                                <SelectItem value="Engineering">Engineering</SelectItem>
-                                <SelectItem value="Product">Product</SelectItem>
-                                <SelectItem value="Design">Design</SelectItem>
-                                <SelectItem value="Marketing">Marketing</SelectItem>
-                                <SelectItem value="Human Resources">Human Resources</SelectItem>
-                              </>
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Joined Month</Label>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Employee ID</Label>
+                      <div className="flex rounded-xl overflow-hidden border border-border/50 bg-accent/30">
+                        <span className="inline-flex items-center px-3 text-sm font-semibold text-muted-foreground bg-slate-950/5 border-r border-border/50">BUDB</span>
                         <Input
-                          placeholder="Mar 2025"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.joinDate}
-                          onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Phone</Label>
-                        <Input
-                          placeholder="+91 98765 43210"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
-                        <Input
-                          placeholder="1234 5678 9012"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.aadhar}
-                          onChange={(e) => setFormData({ ...formData, aadhar: formatAadhaar(e.target.value) })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
-                        <Input
-                          placeholder="ABCDE1234F"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={formData.pan}
-                          onChange={(e) => setFormData({ ...formData, pan: formatPAN(e.target.value) })}
+                          placeholder="001"
+                          className="h-12 rounded-none rounded-r-xl bg-transparent border-none focus:ring-0"
+                          value={formData.employeeNumber}
+                          onChange={(e) => setFormData({...formData, employeeNumber: e.target.value.replace(/[^0-9]/g, '')})}
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Work Email</Label>
+                      <Input 
+                        type="email"
+                        placeholder="john@budbinnovations.com" 
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Role</Label>
+                      <Input 
+                        placeholder="e.g. Developer" 
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.role}
+                        onChange={(e) => setFormData({...formData, role: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Department</Label>
+                      <Select onValueChange={(v) => setFormData({...formData, dept: v as string})}>
+                        <SelectTrigger className="w-full h-12 rounded-xl bg-accent/30 border-none text-left">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {departments.length > 0 ? (
+                            departments.map((dept) => (
+                              <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                            ))
+                          ) : (
+                            <>
+                              <SelectItem value="Engineering">Engineering</SelectItem>
+                              <SelectItem value="Product">Product</SelectItem>
+                              <SelectItem value="Design">Design</SelectItem>
+                              <SelectItem value="Marketing">Marketing</SelectItem>
+                              <SelectItem value="Human Resources">Human Resources</SelectItem>
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Joined Month</Label>
+                      <Input
+                        placeholder="Mar 2025"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.joinDate}
+                        onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Phone</Label>
+                      <Input
+                        placeholder="+91 98765 43210"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
+                      <Input
+                        placeholder="1234 5678 9012"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.aadhar}
+                        onChange={(e) => setFormData({ ...formData, aadhar: formatAadhaar(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
+                      <Input
+                        placeholder="ABCDE1234F"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={formData.pan}
+                        onChange={(e) => setFormData({ ...formData, pan: formatPAN(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Date of Birth</Label>
+                      <Input
+                        type="date"
+                        className="h-12 rounded-xl bg-accent/30 border-none text-muted-foreground focus:text-foreground"
+                        value={formData.dob}
+                        onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2 sm:col-span-2">
                       <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
                       <Input
                         placeholder="123 Main St, Bangalore, India"
@@ -436,7 +441,7 @@ export default function EmployeesPage() {
               setIsEditModalOpen(open);
               if (!open) setSelectedEmployee(null);
             }}>
-              <DialogContent className="sm:max-w-[425px] rounded-[24px] glass dark:glass-dark border-border/50">
+              <DialogContent className="sm:max-w-[650px] rounded-[24px] glass dark:glass-dark border-border/50">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -449,7 +454,7 @@ export default function EmployeesPage() {
                       Update the department and status for the selected employee.
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="grid gap-6 py-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
                     <div className="space-y-2">
                       <Label className="font-bold text-xs uppercase tracking-widest ml-1">Employee ID</Label>
                       <Input
@@ -475,35 +480,6 @@ export default function EmployeesPage() {
                         className="h-12 rounded-xl bg-accent/30 border-none"
                         value={editFormData.phone}
                         onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
-                        <Input
-                          placeholder="1234 5678 9012"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={editFormData.aadhar}
-                          onChange={(e) => setEditFormData({ ...editFormData, aadhar: formatAadhaar(e.target.value) })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
-                        <Input
-                          placeholder="ABCDE1234F"
-                          className="h-12 rounded-xl bg-accent/30 border-none"
-                          value={editFormData.pan}
-                          onChange={(e) => setEditFormData({ ...editFormData, pan: formatPAN(e.target.value) })}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
-                      <Input
-                        placeholder="123 Main St, Bangalore, India"
-                        className="h-12 rounded-xl bg-accent/30 border-none"
-                        value={editFormData.address}
-                        onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
@@ -546,6 +522,42 @@ export default function EmployeesPage() {
                         <option value="on-leave">On Leave</option>
                         <option value="inactive">Inactive</option>
                       </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Aadhaar Number</Label>
+                      <Input
+                        placeholder="1234 5678 9012"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={editFormData.aadhar}
+                        onChange={(e) => setEditFormData({ ...editFormData, aadhar: formatAadhaar(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">PAN Card</Label>
+                      <Input
+                        placeholder="ABCDE1234F"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={editFormData.pan}
+                        onChange={(e) => setEditFormData({ ...editFormData, pan: formatPAN(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Date of Birth</Label>
+                      <Input
+                        type="date"
+                        className="h-12 rounded-xl bg-accent/30 border-none text-muted-foreground focus:text-foreground"
+                        value={editFormData.dob}
+                        onChange={(e) => setEditFormData({ ...editFormData, dob: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
+                      <Input
+                        placeholder="123 Main St, Bangalore, India"
+                        className="h-12 rounded-xl bg-accent/30 border-none"
+                        value={editFormData.address}
+                        onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                      />
                     </div>
                   </div>
                   <DialogFooter>
@@ -707,6 +719,7 @@ export default function EmployeesPage() {
                                 aadhar: emp.aadhar || '',
                                 pan: emp.pan || '',
                                 address: emp.address || '',
+                                dob: emp.dob || '',
                               });
                               setIsEditModalOpen(true);
                             }}

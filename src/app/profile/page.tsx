@@ -57,6 +57,17 @@ export default function ProfilePage() {
     return `•••••${clean.slice(-5, -1)}•`;
   };
 
+  const formatDob = (dobStr: string) => {
+    if (!dobStr) return '—';
+    try {
+      const date = new Date(dobStr);
+      if (isNaN(date.getTime())) return dobStr;
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+      return dobStr;
+    }
+  };
+
   const [showAadhar, setShowAadhar] = useState(false);
   const [showPan, setShowPan] = useState(false);
 
@@ -69,6 +80,7 @@ export default function ProfilePage() {
     aadhar: profile?.aadhar || '',
     pan: profile?.pan || '',
     address: profile?.address || '',
+    dob: profile?.dob || '',
   });
 
   useEffect(() => {
@@ -81,6 +93,7 @@ export default function ProfilePage() {
       aadhar: profile?.aadhar || assignedEmployee?.aadhar || '',
       pan: profile?.pan || assignedEmployee?.pan || '',
       address: profile?.address || assignedEmployee?.address || '',
+      dob: profile?.dob || assignedEmployee?.dob || '',
     });
   }, [profile, assignedEmployee]);
 
@@ -137,6 +150,7 @@ export default function ProfilePage() {
         aadhar: cleanAadhar ? formatAadhaar(cleanAadhar) : '',
         pan: cleanPan,
         address: formValues.address.trim(),
+        dob: formValues.dob,
       });
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
@@ -284,6 +298,15 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div className="space-y-2">
+                    <Label className="font-bold text-xs uppercase tracking-widest ml-1">Date of Birth</Label>
+                    <Input
+                      type="date"
+                      className="h-12 rounded-xl bg-accent/30 border-none text-muted-foreground focus:text-foreground"
+                      value={formValues.dob}
+                      onChange={(e) => setFormValues({ ...formValues, dob: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label className="font-bold text-xs uppercase tracking-widest ml-1">Address</Label>
                     <Input
                       placeholder="123 Main St, Bangalore, India"
@@ -342,6 +365,17 @@ export default function ProfilePage() {
                             </button>
                           )}
                         </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
+                        <Calendar size={20} />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Date of Birth</span>
+                        <span className="text-base font-bold truncate" title={formValues.dob ? formatDob(formValues.dob) : '—'}>
+                          {formatDob(formValues.dob)}
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -289,6 +289,17 @@ export default function ReportsPage() {
                     <FileText size={16} className="text-muted-foreground" />
                     <span className="text-foreground font-semibold">PAN: {activeEmployee.pan || '—'}</span>
                   </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar size={16} className="text-muted-foreground" />
+                    <span className="text-foreground font-semibold">DOB: {activeEmployee.dob ? (() => {
+                      try {
+                        const d = new Date(activeEmployee.dob);
+                        return isNaN(d.getTime()) ? activeEmployee.dob : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                      } catch {
+                        return activeEmployee.dob;
+                      }
+                    })() : '—'}</span>
+                  </div>
                   <div className="col-span-1 sm:col-span-2 flex items-start gap-2 text-sm">
                     <MapPin size={16} className="text-muted-foreground mt-0.5 shrink-0" />
                     <span className="text-foreground font-semibold">Address: {activeEmployee.address || '—'}</span>

@@ -44,6 +44,7 @@ export interface UserProfile {
   aadhar?: string;
   pan?: string;
   address?: string;
+  dob?: string;
 }
 
 export interface TimesheetEntry {
@@ -103,6 +104,7 @@ export interface Employee {
   aadhar?: string;
   pan?: string;
   address?: string;
+  dob?: string;
 }
 
 export interface Project {
@@ -195,6 +197,7 @@ function normalizeProfileDoc(id: string, data: any): UserProfile {
     aadhar: data.aadhar || undefined,
     pan: data.pan || undefined,
     address: data.address || undefined,
+    dob: data.dob || undefined,
   };
 }
 
@@ -389,6 +392,7 @@ export async function getEmployees() {
       aadhar: data.aadhar || undefined,
       pan: data.pan || undefined,
       address: data.address || undefined,
+      dob: data.dob || undefined,
     };
   });
 
@@ -414,6 +418,7 @@ export async function getEmployees() {
         aadhar: data.aadhar || undefined,
         pan: data.pan || undefined,
         address: data.address || undefined,
+        dob: data.dob || undefined,
       };
     })
     .filter((item) => item.role !== 'hr');
@@ -467,6 +472,7 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     aadhar: employee.aadhar || '',
     pan: employee.pan || '',
     address: employee.address || '',
+    dob: employee.dob || '',
   });
 
   // 2. Create the employee record doc in Firestore 'employees' collection
@@ -484,6 +490,7 @@ export async function addEmployee(employee: Omit<Employee, 'id'>, password?: str
     aadhar: employee.aadhar || '',
     pan: employee.pan || '',
     address: employee.address || '',
+    dob: employee.dob || '',
   });
 
   return { id: uid, ...employee, avatar: avatarUrl };
